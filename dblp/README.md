@@ -1,12 +1,13 @@
 # Network Science
-## Project 1 : Parse dblp XML data to obtain network science measures so as to justify observations.
+## Project 1 :
+Parse dblp XML data to obtain network science measures so as to justify observations.
 This project attempts to build corresponding graphs from edgelist defined in the respective output CSV files for detailed analysis. 
 
-User Inputs
-(1) Provide the XML data file (eg. dblp.xml)
-(2) Provide the interested venues (eg. interested_venues.csv)
+User Inputs : <br />
+(1) Provide the XML data file (eg. dblp.xml)<br />
+(2) Provide the interested venues (eg. interested_venues.csv)<br />
 
-Outputs :
+Outputs : <br />
 (1) CSV formatted file (eg. dblp_noTags.csv) to draw the author-venue graph.
 
 ## Details
