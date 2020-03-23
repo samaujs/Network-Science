@@ -75,9 +75,11 @@ def extract_elem_info(context):
     booktitle_list = []
     pubCnt = 0            # All publications
     confCnt = 0           # Interest conferences/venues with booktitle
+
     unwanted_tagsCnt = 0
     notUsedBookTitle = ''
     notUsedBooktitleList = []
+    lastBookTitle = ''
 
     #read blocks line by line, look for author and booktitle
     for event, elem in context :
@@ -97,13 +99,15 @@ def extract_elem_info(context):
                    author_list.append(replaceStr)
 
         # If booktitle does not exist, then there will not be any element text
-        if elem.tag == 'booktitle' :
+        if (elem.tag == 'booktitle') and (lastBookTitle == '') :
             if elem.text :
                 booktitle = elem.text
                 booktitle_list.append(elem.text)
                 confCnt += 1
+                lastBookTitle = booktitle
 
         if elem.tag in xml_tags :
+            # Only capture information for interested xml_tags
             # and ('Inf. Sci.' in booktitle or 'Image Vision Comput.' in booktitle or 'VLDB' in booktitle) :
             if title and year:
                 pubCnt += 1
@@ -149,6 +153,7 @@ def extract_elem_info(context):
                 title = ''
                 year = ''
                 booktitle = ''
+                lastBookTitle = ''
 
             else:
                 print('------------------------------------------------------------------------------------------------------------------------------------')
@@ -164,10 +169,12 @@ def extract_elem_info(context):
                     unwanted_tagsCnt += 1
                     notUsedBookTitle = booktitle
                     notUsedBooktitleList.append(booktitle)
+                    
+                    lastBookTitle = ''
 
-                print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-                print("Tag not in xml_tags : " + elem.tag + ", with booktitle : " + booktitle)
-                print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+                    print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+                    print("Tag not in xml_tags : " + elem.tag + ", with booktitle : " + booktitle + ", on : " + year)
+                    print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
                 
 
         elem.clear()
@@ -217,7 +224,7 @@ if __name__ == "__main__":
     output_xml_filename = input_filename_noExt + "_noTags.xml"
 
     cmd = "cat %s | sed \'s/<i>//g\' | sed \'s/<\/i>//g\' | sed \'s/<sup>//g\' | sed \'s/<\/sup>//g\' | sed \'s/<sub>//g\' | sed \'s/<\sub>//g\' | sed \'s/<tt>//g\' | sed \'s/<\/tt>//g\' > %s" % (sys.argv[1], output_xml_filename)
-    os.system(cmd)
+    #os.system(cmd)
 
     # Execution is asynchronous
     # Hit any key to continue
