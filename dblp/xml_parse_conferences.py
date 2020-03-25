@@ -74,108 +74,121 @@ def extract_elem_info(context):
     booktitle = ''
     booktitle_list = []
     pubCnt = 0            # All publications
-    confCnt = 0           # Interest conferences/venues with booktitle
+    confCnt = 0           # Interested conferences/venues with booktitle same as len(booktitle_list)
 
     unwanted_tagsCnt = 0
-    notUsedBookTitle = ''
+    notUsedBookTitle = 'PastThroughTheFirstTime'
     notUsedBooktitleList = []
     lastBookTitle = ''
 
+    unwanted_tags = ['article', 'book', 'incollection', 'mastersthesis', 'phdthesis', 'www']
+
     #read blocks line by line, look for author and booktitle
     for event, elem in context :
-        if elem.tag == 'title' :
-            if elem.text :
-                title = elem.text
-        if elem.tag == 'year' :
-            if elem.text :
-                year = elem.text
 
-        if elem.tag == 'author': 
+        # Need to capture information before interested xml_tag appears
+        # "inproceedings" appear in elem.tag only when </inproceedings> appear
+        # (1) author pid
+        if elem.tag == 'author':
             if elem.text:
                 oldStr = elem.text
-                replaceStr = oldStr.replace('-',' ')
-                # Append author list only for every new title and when xml_tags are matched
-                if title == '':
-                   author_list.append(replaceStr)
+                replaceStr = oldStr.replace('-', ' ')
 
+                # Append author list only for every new title
+                if booktitle == '':
+                    author_list.append(replaceStr)
+
+        # (2) title
+        if elem.tag == 'title':
+            if elem.text:
+                title = elem.text
+                pubCnt += 1
+
+        # (3) year
+        if elem.tag == 'year':
+            if elem.text:
+                year = elem.text
+
+        # (4) booktitle
         # If booktitle does not exist, then there will not be any element text
-        if (elem.tag == 'booktitle') and (lastBookTitle == '') :
-            if elem.text :
+        if (elem.tag == 'booktitle') and (lastBookTitle == ''):
+            if elem.text:
                 booktitle = elem.text
-                booktitle_list.append(elem.text)
-                confCnt += 1
                 lastBookTitle = booktitle
 
         if elem.tag in xml_tags :
-            # Only capture information for interested xml_tags
-            # and ('Inf. Sci.' in booktitle or 'Image Vision Comput.' in booktitle or 'VLDB' in booktitle) :
-            if title and year:
-                pubCnt += 1
-                print("Element No. :", pubCnt)
+            # Now to store required information for interested xml_tags
+            if booktitle and year:
+                confCnt += 1
+                print("Element No. :", confCnt)
 
                 year = int(year)
                 print('{:d}'.format(year), end='')
 
-                # For all publications from author
-                if booktitle :
-                    print(', {:s}'.format(booktitle), end=', ')
-                else :
-                    print(', NoBt', end=', ')
-                    # If booktitle does not exist for the elem.tag just included no booktitle present in the booktitle_list
-                    booktitle_list.append('NoBt')
+                # For all conferences/venues based on booktitle from author
+                print(', {:s}'.format(booktitle), end='\n')
+                booktitle_list.append(booktitle)
 
-                # Authors
+                # Append author list only for every new title and when xml_tags are matched
                 for author in author_list:
                     print('{:s}'.format(author), end=', ')
 
                     # Create the Author-Journal/Venue lists
                     source.append(author)
-                    if booktitle :
-                        target.append(booktitle)
-                    else :
-                        target.append('NoBt')
+                    target.append(booktitle)
 
                 print('')
-
                 print("No. of authors :", len(author_list))
 
+                # Show the title with the booktitle/venue/conferences
                 for word in tokenizer.tokenize(title):
                     print('{:s}'.format(word), end=' ')
                 #print("\nSource :", source)
                 #print("\nTarget :", target)
 
-                print(flush=True)
-                
-                print('Element Tag :', elem.tag)
+                print('\nElement Tag :', elem.tag)
                 #print('booktitle list:', booktitle_list)
                 print('------------------------------------------------------------------------------------------------------------------------------------')
+                print(flush=True)
 
+                # Reset all variables
                 title = ''
                 year = ''
                 booktitle = ''
                 lastBookTitle = ''
+                author_list = []
 
+                # Only interested in tags with booktitles
+                # elif not booktitle :
+                #     print(', NoBt', end=', ')
+                #     # If booktitle does not exist for the elem.tag just included no booktitle present in the booktitle_list
+                #     booktitle_list.append('NoBt')
+                #     target.append('NoBt')
             else:
                 print('------------------------------------------------------------------------------------------------------------------------------------')
-                print("Missing year : " + year + " or missing title : " + title)
+                print("Missing year : " + year + " or missing title : " + booktitle)
 
-            # Clear author list after checking xml_tags if not it will be concatenated and append only with new title
-            author_list = []
-
+                # Need to clear author list if required information is incomplete
+                #author_list = []
         else:
-            unwanted_tags = ['article', 'book', 'incollection', 'mastersthesis', 'phdthesis', 'www']
-            if (elem.tag in unwanted_tags) and booktitle:
-                if notUsedBookTitle != booktitle:
+            if (elem.tag in unwanted_tags) :
+
+                if notUsedBookTitle != booktitle and booktitle:
                     unwanted_tagsCnt += 1
                     notUsedBookTitle = booktitle
                     notUsedBooktitleList.append(booktitle)
-                    
-                    lastBookTitle = ''
+
+                    #lastBookTitle = ''
 
                     print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-                    print("Tag not in xml_tags : " + elem.tag + ", with booktitle : " + booktitle + ", on : " + year)
+                    print("Tag not in xml_tags : " + elem.tag + ", with title : " + title + ", on : " + year)
                     print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-                
+
+                # Need to clear list otherwise the author list will be concatenated
+                author_list = []
+                # Reset booktitle so that new author can be appended to list for new interested xml_tags
+                booktitle = ''
+                lastBookTitle = ''
 
         elem.clear()
 
@@ -183,16 +196,19 @@ def extract_elem_info(context):
             # del elem.getparent()[0]
             # print(elem.getprevious())
     del context
-    print('\nList of all publications :\n', booktitle_list)
-    print('\nTotal no. of publications :', len(booktitle_list))
-    print('\nList of book titles not in the required xml_tags :\n', notUsedBooktitleList)
-    print('\nTotal no. of publications with unwanted tags :', unwanted_tagsCnt)
 
+    # Hit any key to continue
+    input("Press Enter to continue...")
+
+    print('\nList of all interested conferences/venues with booktitles (non-unique) :\n', booktitle_list)
+    print('\nTotal no. of interested conferences/venues with booktitles :', len(booktitle_list))
+    print('\nList of book titles not in the required xml_tags :\n', notUsedBooktitleList)
+    print('\nTotal no. of interested conferences/venues with unwanted tags :', unwanted_tagsCnt)
 
     # dblp refined by "Books and Theses, Conferences and Workshop Papers,
     # Parts in Books or Collections, Editorship, Reference Works"
     # 2 elements, b1 and b2 in "Books and Theses" are without booktitle making total counts of 176 instead of 178
-    print("\nNo. of Booktitle (starts from 0) :", confCnt)
+    print("\nNo. of Booktitles (starts from 0) :", confCnt)
 
     pubCnt = 0
     confCnt = 0
@@ -207,9 +223,6 @@ def extract_elem_info(context):
     print("Value of the highest count :", unique_values[index_max])
 
     booktitle_list = []
-
-    # Hit any key to continue
-    input("Press Enter to continue...")
 
     
 # Start of the main program
