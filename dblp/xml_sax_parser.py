@@ -75,6 +75,7 @@ class DBLPHandler( xml.sax.ContentHandler ):
         self.total_no_authors = 0
 
         self.current_Tag = ''
+        self.total_uninterested_venues = 0
 
     
         # For all tags : self.xml_tags = ['article', 'book', 'incollection', 'inproceedings', 'mastersthesis', 'phdthesis', 'proceedings', 'www']
@@ -119,6 +120,7 @@ class DBLPHandler( xml.sax.ContentHandler ):
             # Capture tag not in xml_tags but will booktitle
             self.current_Tag = tag
 
+
     # (2) Call when a tag is read and store in relevant variables
     def characters(self, content):
         if self.CurrentData == "year":
@@ -129,15 +131,18 @@ class DBLPHandler( xml.sax.ContentHandler ):
             replaceStr = content.replace(',', '')
 
             # Reset to uninterested details as venues are of no interest, no further processing required
-            # if (replaceStr in self.interested_venues):
-            #     self.interested_details = False
+            if (replaceStr not in self.interested_venues):
+                self.interested_details = False
+                self.total_uninterested_venues += 1
+                print("\nUninterested venue " + str(self.total_uninterested_venues) + " :", replaceStr)
 
                 # Update booktitle for only interested xml_tags
             if self.interested_details == True:
                 booktitle_list.append(replaceStr)
             else:
                 print('\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-                print("Booktitle \"" + replaceStr + "\" in \"" + self.current_Tag + "\" is not in the required xml_tags or uninterested venues : " + content)
+                print("Booktitle \"" + content + "\" of tag \"" + self.current_Tag +
+                      "\" (different value for unwanted venues) is not in the required xml_tags or uninterested venues.")
                 print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
 
             self.booktitle = replaceStr
