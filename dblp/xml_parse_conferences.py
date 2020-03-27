@@ -66,6 +66,10 @@ def create_csv_file(filename, graph_data):
 
     writeFile.close()
 
+# Return intersection list
+def intersection(list1, list2):
+    return list(set(list1) & set(list2))
+
 # Extracting the element information
 def extract_elem_info(context):
     author_list = []
