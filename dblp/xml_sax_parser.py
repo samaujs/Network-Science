@@ -73,24 +73,24 @@ class DBLPHandler( xml.sax.ContentHandler ):
 
         self.pubCnt = 0            # All publications with relevant xml tags
         self.total_no_authors = 0
-        
-    #unwanted_tagsCnt = 0
-    #notUsedBookTitle = ''
-    #notUsedBooktitleList = []
+
+        self.current_Tag = ''
+
     
         # For all tags : self.xml_tags = ['article', 'book', 'incollection', 'inproceedings', 'mastersthesis', 'phdthesis', 'proceedings', 'www']
         self.xml_tags = ['inproceedings', 'proceedings']
-        # '/inproceedings', '/proceedings',
-        self.unwanted_xml_tags = ['article', '/article', 'book', '/book', 'incollection', '/incollection',
-                                  'mastersthesis', '/mastersthesis','phdthesis', '/phdthesis', 'www', '/www']
+        # '/inproceedings', '/proceedings', '/article', '/book', '/incollection', '/mastersthesis', '/phdthesis', '/www'
+        # xml tags will not be parsed
+        self.unwanted_xml_tags = ['article', 'book', 'incollection',
+                                  'mastersthesis', 'phdthesis', 'www']
         self.interested_venues = ['VLDB', 'KDD', 'EDBT', 'ICDE', 'ICDM', 'SDM', 'CIKM', 'DASFAA', 'PAKDD', 'PKDD', 'DEXA']
-
 
         self.interested_details = False
 
    # (1) Call when an element starts
     def startElement(self, tag, attributes):
         # Sequence : characters -> startElement -> characters -> endElement
+        # dblp XML order affects progressing sequence : inproceedings -> author -> title -> year -> booktitle
         self.CurrentData = tag
 
         if tag in self.xml_tags:
@@ -101,20 +101,23 @@ class DBLPHandler( xml.sax.ContentHandler ):
             print('------------------------------------------------------------------------------------------------------------------------------------')
 
             # and self.booktitle in self.interested_venues
-            #print('\nInterested venues :', self.interested_venues)
-
+            print('\nInterested venues :', self.interested_venues)
             print('Mdate :', mdate)
             print('Element No. :', self.pubCnt)
             print('Element Tag :', tag)
             
             # Important : Reset all variables after each round of interested xml tags
             self.interested_details = True
+            # Clear author list for next booktitle
+            self.author_list = []
 
             #if self.pubCnt > 100:
                 #exit()
         elif tag in self.unwanted_xml_tags:
             # Toggle back
             self.interested_details = False
+            # Capture tag not in xml_tags but will booktitle
+            self.current_Tag = tag
 
     # (2) Call when a tag is read and store in relevant variables
     def characters(self, content):
@@ -125,7 +128,17 @@ class DBLPHandler( xml.sax.ContentHandler ):
             # Strip off an additional comma from the booktitle else there will be problem with CSV edgelist
             replaceStr = content.replace(',', '')
 
-            booktitle_list.append(replaceStr)
+            # Reset to uninterested details as venues are of no interest, no further processing required
+            # if (replaceStr in self.interested_venues):
+            #     self.interested_details = False
+
+                # Update booktitle for only interested xml_tags
+            if self.interested_details == True:
+                booktitle_list.append(replaceStr)
+            else:
+                print('\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+                print("Booktitle \"" + replaceStr + "\" in \"" + self.current_Tag + "\" is not in the required xml_tags or uninterested venues : " + content)
+                print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
 
             self.booktitle = replaceStr
         elif self.CurrentData == "author":
@@ -188,9 +201,9 @@ class DBLPHandler( xml.sax.ContentHandler ):
                 if len(self.author_list) == 0:
                     self.total_no_authors += 1
                     sum_of_no_authors = self.total_no_authors
-                
-                # Clear author list for next booktitle
-                self.author_list = []
+                    print('\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                    print("Current total of booktitles without authors :", sum_of_no_authors)
+                    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
 
                 print(self.booktitle)
                 #print('{:s}'.format(self.booktitle), end=', ')
@@ -274,9 +287,10 @@ if ( __name__ == "__main__"):
     # Gives different values from the degrees in the Author-Journal/Venue graph because authors give individual edges/links
     print('with the respective counts out of the total no. of publications :', counts)
 
-    index_max = np.argmax(counts)
-    print('Index of the highest count :', index_max)
-    print('Value of the highest count :', unique_values[index_max])
+    if len(unique_values) > 0:
+        index_max = np.argmax(counts)
+        print('Index of the highest count :', index_max)
+        print('Value of the highest count :', unique_values[index_max])
     
     # Clear booktitle_list
     booktitle_list = []
