@@ -69,7 +69,6 @@ class DBLPHandler( xml.sax.ContentHandler ):
     
         self.author_list = []
         self.author = ''
-        self.partial_author = ''
 
         self.pubCnt = 0            # All publications with relevant xml tags
         self.total_no_authors = 0
@@ -117,7 +116,7 @@ class DBLPHandler( xml.sax.ContentHandler ):
         elif tag in self.unwanted_xml_tags:
             # Toggle back
             self.interested_details = False
-            # Capture tag not in xml_tags but will booktitle
+            # Capture tag not in xml_tags but with booktitle
             self.current_Tag = tag
 
 
@@ -131,12 +130,13 @@ class DBLPHandler( xml.sax.ContentHandler ):
             replaceStr = content.replace(',', '')
 
             # Reset to uninterested details as venues are of no interest, no further processing required
+            # Section to filter only for interest venues
             if (replaceStr not in self.interested_venues):
                 self.interested_details = False
                 self.total_uninterested_venues += 1
                 print("\nUninterested venue " + str(self.total_uninterested_venues) + " :", replaceStr)
 
-                # Update booktitle for only interested xml_tags
+            # Update booktitle for only interested xml_tags
             if self.interested_details == True:
                 booktitle_list.append(replaceStr)
             else:
