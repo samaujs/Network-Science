@@ -2,7 +2,7 @@
 ## Project 1 :
 This project generates corresponding graphs for detailed network science analysis.  They are created from edgelist defined in the respective output CSV files via correspoding scripts. 
 
-(A) Run "xml_sax_parser.py <xml filename>" will generate the author-venue graph information based on the provided venues of interest.<br>
+(A) Run ***"xml_sax_parser.py <xml filename>"*** will generate the author-venue graph information based on the provided venues of interest.<br>
 User Inputs : <br>
 (1) Provide the XML data file (eg. dblp.xml)<br>
 (2) Provide the interested venues from a file/interface (eg. interested_venues.csv)<br>
@@ -10,7 +10,7 @@ User Inputs : <br>
 Outputs : <br>
 (1) CSV formatted file (eg. ./datasets/dblp.csv) to draw the author-venue graph.<br>
 
-(B) Run "xml_sax_parser_institutes.py <xml filename>" will generate the author-institution graph information.<br>
+(B) Run ***"xml_sax_parser_institutes.py <xml filename>"*** will generate the author-institution graph information.<br>
 User Inputs : <br>
 (1) Provide the XML data file (eg. dblp.xml)<br>
 
