@@ -1,6 +1,6 @@
 # Network Science
 ## Project 1 :
-This project generates corresponding graphs for detailed network science analysis.  They are created from edgelist defined in the respective output CSV files via correspoding scripts. 
+This project generates corresponding graphs for detailed network science analysis based on Big Data (https://dblp.uni-trier.de/).  They are created from edgelist defined in the respective output CSV files via correspoding scripts. 
 
 (A) Run ***"xml_sax_parser.py filename.xml"*** will generate the author-venue graph information based on the provided venues of interest.<br>
 User Inputs : <br>

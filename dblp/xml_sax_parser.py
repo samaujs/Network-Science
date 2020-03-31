@@ -69,14 +69,11 @@ class DBLPHandler( xml.sax.ContentHandler ):
     
         self.author_list = []
         self.author = ''
-
         self.pubCnt = 0            # All publications with relevant xml tags
         self.total_no_authors = 0
-
         self.current_Tag = ''
         self.total_uninterested_venues = 0
 
-    
         # For all tags : self.xml_tags = ['article', 'book', 'incollection', 'inproceedings', 'mastersthesis', 'phdthesis', 'proceedings', 'www']
         self.xml_tags = ['inproceedings', 'proceedings']
         # '/inproceedings', '/proceedings', '/article', '/book', '/incollection', '/mastersthesis', '/phdthesis', '/www'
