@@ -1,0 +1,22 @@
+#########################################################################
+# The list of System Requirements needed to perform the research project
+# Created by : Au Jit Seah
+# File owners : Au Jit Seah
+#########################################################################
+- Ubuntu 18.04.4 LTS
+- jupyter               1.0.0       
+- matplotlib            3.2.1
+- networkx              2.4         
+- notebook              6.0.3       
+- numpy                 1.18.2
+- scikit-learn          0.22.2.post1
+- tensorboardX          2.0 
+- tensorflow            2.1.0
+- torch                 1.4.0       
+- torch-cluster         1.5.3       
+- torch-geometric       1.4.3       
+- torch-scatter         2.0.4       
+- torch-sparse          0.6.1       
+- torch-spline-conv     1.2.0       
+- torchvision           0.5.0
+** Both the PyTorch and torch_sparse CUDA version must matched at version 10.1 **
