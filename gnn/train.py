@@ -236,5 +236,54 @@ def syn_task1(args, writer=None):
 
     train_node_classifier(G, labels, model, args, writer=writer)
 
-    # To be removed after testing
+    # Return model for manipulations in ipynb
     return model
+
+# Default parameters for the program
+# Define all required arguments
+class gnn_args:
+    def __init__(self):
+        self.datadir = "data"        # Directory where benchmark is stored (io_parser)
+        self.logdir = "log"          # Tensorboard log directory
+        self.ckptdir = "ckpt"        # Model checkpoint directory
+        self.dataset = "BAGraph"     # Synthetic dataset, syn1
+        self.opt = "adam"            # opt_parser
+        self.opt_scheduler = "none"  # Optimizer scheduler
+        self.max_nodes = 100         # Maximum number of nodes
+                                     # (ignore graphs with nodes exceeding the number)
+        self.cuda = "0"              # CUDA value
+        self.feature_type = "default"# Feature used for encoder with possible values : id, deg
+        self.lr = 0.001              # Learning rate
+        self.clip = 2.0
+
+        self.batch_size = 20         # Batch size
+        self.num_epochs = 1000       # Number of epochs to train data
+        self.train_ratio = 0.8       # Ratio of number of training set to all graphs
+        self.test_ratio = 0.1
+        self.num_workers = 1         # Number of workers to load data
+        self.input_dim = 10          # Input feature dimension
+        self.hidden_dim = 20         # Hidden layer dimension
+        self.output_dim = 20         # Output layer dimension
+        self.num_classes = 2         # Number of label classes
+        self.num_gc_layers = 3       # Number of graph convolution layers before each pooling
+
+        self.dropout = 0.0           # Dropout rate
+        self.weight_decay = 0.005    # Weight decay regularization constant
+        self.method = "base"         # Method used with possible values : base
+        self.name_suffix = ""        # Suffix added to the output filename
+        self.assign_ratio = 0.1      # Ratio of number of nodes in consecutive layers
+
+        self.bias = True             # "Whether to add bias
+
+        self.gpu = False             # Whether to use GPU
+        self.linkpred = False        # Whether link prediction side objective is used
+        self.bn = False              # Whether batch normalization is used
+        self.bmname = None           # Name of the benchmark datase
+
+# Start of Program
+def main():
+    prog_args = gnn_args()
+    syn_task1(prog_args, writer=None)
+
+if __name__ == "__main__":
+    main()
