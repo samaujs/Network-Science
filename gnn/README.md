@@ -2,8 +2,8 @@
 ## Project 2 :
 This project attempts to recreate some of the experiments carried out for explaining Graph Neural Network prediction on node/link/graph classifications.<br>
 References and adaptations:<br>
-[1][a link](https://cs.stanford.edu/people/jure/pubs/gnnexplainer-neurips19.pdf)<br>
-[2][a link](https://github.com/RexYing/gnn-model-explainer)
+[1]["GNNExplainer: Generating Explanations for Graph Neural Networks", Rex Ying et. al](https://cs.stanford.edu/people/jure/pubs/gnnexplainer-neurips19.pdf)<br>
+[2][GNNExplainer original code](https://github.com/RexYing/gnn-model-explainer)
 
 (A) Run ***"train.py --gpu --input_dim --output_dim"*** will create a BA graph with attached "house" motifs that are used for node classifications.<br>
 Provided arguments : <br>
