@@ -5,7 +5,7 @@ References and adaptations:<br>
 [1]["GNNExplainer: Generating Explanations for Graph Neural Networks", Rex Ying et. al](https://cs.stanford.edu/people/jure/pubs/gnnexplainer-neurips19.pdf)<br>
 [2][GNNExplainer original code](https://github.com/RexYing/gnn-model-explainer)
 
-(A) Run ***"train.py --gpu --input_dim --output_dim"*** will create a BA graph with attached "house" motifs that are used for node classifications.<br>
+(A) Run ***"train.py  ./parse_prog_args.py --gpu --batch_size=50 --dropout=0.001"*** will create a BA graph with attached "house" motifs that are used for node classifications.<br>
 Provided arguments : <br>
 (1) Provide the input parameters (eg. refer to ./train.py)<br>
 

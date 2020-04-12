@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 ##########################################################################################
 # This file trains the GNNs for classifications, save the checkpoint to be loaded for
 # explanations (node, edge, graph)
@@ -14,11 +15,15 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+import os
+from tensorboardX import SummaryWriter
+
 # Own modules
 import gengraph
 import utils.io_utils as io_utils
 import utils.featureGen as featureGen
 import models
+import parse_prog_args
 
 # Evaluate node classifications
 def evaluate_node(ypred, labels, train_idx, test_idx):
@@ -241,49 +246,78 @@ def syn_task1(args, writer=None):
 
 # Default parameters for the program
 # Define all required arguments
-class gnn_args:
-    def __init__(self):
-        self.datadir = "data"        # Directory where benchmark is stored (io_parser)
-        self.logdir = "log"          # Tensorboard log directory
-        self.ckptdir = "ckpt"        # Model checkpoint directory
-        self.dataset = "BAGraph"     # Synthetic dataset, syn1
-        self.opt = "adam"            # opt_parser
-        self.opt_scheduler = "none"  # Optimizer scheduler
-        self.max_nodes = 100         # Maximum number of nodes
-                                     # (ignore graphs with nodes exceeding the number)
-        self.cuda = "0"              # CUDA value
-        self.feature_type = "default"# Feature used for encoder with possible values : id, deg
-        self.lr = 0.001              # Learning rate
-        self.clip = 2.0
-
-        self.batch_size = 20         # Batch size
-        self.num_epochs = 1000       # Number of epochs to train data
-        self.train_ratio = 0.8       # Ratio of number of training set to all graphs
-        self.test_ratio = 0.1
-        self.num_workers = 1         # Number of workers to load data
-        self.input_dim = 10          # Input feature dimension
-        self.hidden_dim = 20         # Hidden layer dimension
-        self.output_dim = 20         # Output layer dimension
-        self.num_classes = 2         # Number of label classes
-        self.num_gc_layers = 3       # Number of graph convolution layers before each pooling
-
-        self.dropout = 0.0           # Dropout rate
-        self.weight_decay = 0.005    # Weight decay regularization constant
-        self.method = "base"         # Method used with possible values : base
-        self.name_suffix = ""        # Suffix added to the output filename
-        self.assign_ratio = 0.1      # Ratio of number of nodes in consecutive layers
-
-        self.bias = True             # "Whether to add bias
-
-        self.gpu = False             # Whether to use GPU
-        self.linkpred = False        # Whether link prediction side objective is used
-        self.bn = False              # Whether batch normalization is used
-        self.bmname = None           # Name of the benchmark datase
+# class gnn_args:
+#     def __init__(self):
+#         self.datadir = "data"        # Directory where benchmark is stored (io_parser)
+#         self.logdir = "log"          # Tensorboard log directory
+#         self.ckptdir = "ckpt"        # Model checkpoint directory
+#         self.dataset = "BAGraph"     # Synthetic dataset, syn1
+#         self.opt = "adam"            # opt_parser
+#         self.opt_scheduler = "none"  # Optimizer scheduler
+#         self.max_nodes = 100         # Maximum number of nodes
+#                                      # (ignore graphs with nodes exceeding the number)
+#         self.cuda = "0"              # CUDA value
+#         self.feature_type = "default"# Feature used for encoder with possible values : id, deg
+#         self.lr = 0.001              # Learning rate
+#         self.clip = 2.0
+#
+#         self.batch_size = 20         # Batch size
+#         self.num_epochs = 1000       # Number of epochs to train data
+#         self.train_ratio = 0.8       # Ratio of number of training set to all graphs
+#         self.test_ratio = 0.1
+#         self.num_workers = 1         # Number of workers to load data
+#         self.input_dim = 10          # Input feature dimension
+#         self.hidden_dim = 20         # Hidden layer dimension
+#         self.output_dim = 20         # Output layer dimension
+#         self.num_classes = 2         # Number of label classes
+#         self.num_gc_layers = 3       # Number of graph convolution layers before each pooling
+#
+#         self.dropout = 0.0           # Dropout rate
+#         self.weight_decay = 0.005    # Weight decay regularization constant
+#         self.method = "base"         # Method used with possible values : base
+#         self.name_suffix = ""        # Suffix added to the output filename
+#         self.assign_ratio = 0.1      # Ratio of number of nodes in consecutive layers
+#
+#         self.bias = True             # "Whether to add bias
+#
+#         self.gpu = False             # Whether to use GPU
+#         self.linkpred = False        # Whether link prediction side objective is used
+#         self.bn = False              # Whether batch normalization is used
+#         self.bmname = None           # Name of the benchmark datase
 
 # Start of Program
 def main():
-    prog_args = gnn_args()
-    syn_task1(prog_args, writer=None)
+    #prog_args = gnn_args()
+    prog_args = parse_prog_args.arg_parse()
+    print("Default program arguments :\n", prog_args)
+
+    #syn_task1(prog_args, writer=None) # writer=writer
+
+
+
+    # prog_args = configs.arg_parse()
+    #
+    # path = os.path.join(prog_args.logdir, io_utils.gen_prefix(prog_args))
+    # writer = SummaryWriter(path)
+    #
+    # if prog_args.gpu:
+    #     os.environ["CUDA_VISIBLE_DEVICES"] = prog_args.cuda
+    #     env = os.environ.get('CUDA_VISIBLE_DEVICES')
+    #     print("Environment is set :", env)
+    #     print('\nCUDA_VISIBLE_DEVICES')
+    #     print('------------------------------------------')
+    #     print("CUDA", prog_args.cuda)
+    # else:
+    #     print("Using CPU")
+    #
+    # writer.close()
+
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+

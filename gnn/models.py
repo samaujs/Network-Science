@@ -129,6 +129,7 @@ class GcnEncoderGraph(nn.Module):
         if args is not None:
             self.bias = args.bias
 
+        # Build the convolution layers
         self.conv_first, self.conv_block, self.conv_last = self.build_conv_layers(
             input_dim,
             hidden_dim,
@@ -145,6 +146,8 @@ class GcnEncoderGraph(nn.Module):
             self.pred_input_dim = hidden_dim * (num_layers - 1) + embedding_dim
         else:
             self.pred_input_dim = embedding_dim
+
+        # Build the prediction layers with pred_hidden_dims=[]
         self.pred_model = self.build_pred_layers(
             self.pred_input_dim, pred_hidden_dims, label_dim, num_aggs=self.num_aggs
         )
@@ -348,7 +351,7 @@ class GcnEncoderGraph(nn.Module):
         # return F.binary_cross_entropy(F.sigmoid(pred[:,0]), label.float())
 
 # GCN Encoding of the nodes
-class GcnEncoderNode(GcnEncoderGraph):    
+class GcnEncoderNode(GcnEncoderGraph):
     def __init__(self, input_dim, hidden_dim, embedding_dim, label_dim, num_layers,
                  pred_hidden_dims=[], concat=True,
                  bn=True, dropout=0.0, args=None,):
@@ -380,6 +383,8 @@ class GcnEncoderNode(GcnEncoderGraph):
             embedding_mask = None
 
         self.adj_atts = []
+
+        # Using gcn_forward rather than forward in GcnEncoderGraph or GraphConv (NTC)
         self.embedding_tensor, adj_att = self.gcn_forward(
             x, adj, self.conv_first, self.conv_block, self.conv_last, embedding_mask
         )
