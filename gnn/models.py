@@ -63,6 +63,7 @@ class GraphConv(nn.Module):
 
         # self.softmax = nn.Softmax(dim=-1)
 
+    # This 'forward' has to be implemented to avoid unimplemented error in Convolution layers
     def forward(self, x, adj):
         if self.dropout > 0.001:
             x = self.dropout_layer(x)
@@ -289,54 +290,55 @@ class GcnEncoderGraph(nn.Module):
         adj_att_tensor = torch.stack(adj_att_all, dim=3)
         return x_tensor, adj_att_tensor
 
-    def forward(self, x, adj, batch_num_nodes=None, **kwargs):
-        # Embedding mask
-        max_num_nodes = adj.size()[1]
-        if batch_num_nodes is not None:
-            self.embedding_mask = self.construct_mask(max_num_nodes, batch_num_nodes)
-        else:
-            self.embedding_mask = None
-
-        # Convolution
-        x, adj_att = self.conv_first(x, adj)
-        x = self.act(x)
-        if self.bn:
-            x = self.apply_bn(x)
-        out_all = []
-        out, _ = torch.max(x, dim=1)
-        out_all.append(out)
-        adj_att_all = [adj_att]
-        for i in range(self.num_layers - 2):
-            x, adj_att = self.conv_block[i](x, adj)
-            x = self.act(x)
-            if self.bn:
-                x = self.apply_bn(x)
-            out, _ = torch.max(x, dim=1)
-            out_all.append(out)
-            if self.num_aggs == 2:
-                out = torch.sum(x, dim=1)
-                out_all.append(out)
-            adj_att_all.append(adj_att)
-        x, adj_att = self.conv_last(x, adj)
-        adj_att_all.append(adj_att)
-        # x = self.act(x)
-        out, _ = torch.max(x, dim=1)
-        out_all.append(out)
-        if self.num_aggs == 2:
-            out = torch.sum(x, dim=1)
-            out_all.append(out)
-        if self.concat:
-            output = torch.cat(out_all, dim=1)
-        else:
-            output = out
-
-        # adj_att_tensor: [batch_size x num_nodes x num_nodes x num_gc_layers]
-        adj_att_tensor = torch.stack(adj_att_all, dim=3)
-
-        self.embedding_tensor = output
-        ypred = self.pred_model(output)
-        # print(output.size())
-        return ypred, adj_att_tensor
+    # This 'forward' and 'loss' functions in 'GcnEncoderGraph' are not used
+#    def forward(self, x, adj, batch_num_nodes=None, **kwargs):
+#        # Embedding mask
+#       max_num_nodes = adj.size()[1]
+#       if batch_num_nodes is not None:
+#           self.embedding_mask = self.construct_mask(max_num_nodes, batch_num_nodes)
+#       else:
+#           self.embedding_mask = None
+#
+#       # Convolution
+#       x, adj_att = self.conv_first(x, adj)
+#       x = self.act(x)
+#       if self.bn:
+#           x = self.apply_bn(x)
+#       out_all = []
+#       out, _ = torch.max(x, dim=1)
+#       out_all.append(out)
+#       adj_att_all = [adj_att]
+#       for i in range(self.num_layers - 2):
+#           x, adj_att = self.conv_block[i](x, adj)
+#           x = self.act(x)
+#           if self.bn:
+#               x = self.apply_bn(x)
+#           out, _ = torch.max(x, dim=1)
+#           out_all.append(out)
+#           if self.num_aggs == 2:
+#               out = torch.sum(x, dim=1)
+#               out_all.append(out)
+#           adj_att_all.append(adj_att)
+#       x, adj_att = self.conv_last(x, adj)
+#       adj_att_all.append(adj_att)
+#       # x = self.act(x)
+#       out, _ = torch.max(x, dim=1)
+#       out_all.append(out)
+#       if self.num_aggs == 2:
+#           out = torch.sum(x, dim=1)
+#           out_all.append(out)
+#       if self.concat:
+#           output = torch.cat(out_all, dim=1)
+#       else:
+#           output = out
+#
+#       # adj_att_tensor: [batch_size x num_nodes x num_nodes x num_gc_layers]
+#       adj_att_tensor = torch.stack(adj_att_all, dim=3)
+#
+#       self.embedding_tensor = output
+#       ypred = self.pred_model(output)
+#       # print(output.size())
+#       return ypred, adj_att_tensor
 
 #     def loss(self, pred, label, type="softmax"):
 #         # softmax + CE
@@ -384,7 +386,7 @@ class GcnEncoderNode(GcnEncoderGraph):
 
         self.adj_atts = []
 
-        # Using gcn_forward rather than forward in GcnEncoderGraph or GraphConv (NTC)
+        # Using 'gcn_forward' rather than 'forward' in GcnEncoderGraph
         self.embedding_tensor, adj_att = self.gcn_forward(
             x, adj, self.conv_first, self.conv_block, self.conv_last, embedding_mask
         )
