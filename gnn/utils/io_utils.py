@@ -80,3 +80,37 @@ def save_checkpoint(model, optimizer, args, num_epochs=-1, isbest=False, cg_dict
         filename
     )
 
+'''
+Load a pre-trained pytorch model from checkpoint.
+'''
+def load_ckpt(args, isbest=False):
+
+    print("Attempt to load model...")
+    filename = create_filename(args.ckptdir, args, isbest)
+    print("Loading file : ", filename)
+    if os.path.isfile(filename):
+        print("=> loading checkpoint '{}'".format(filename))
+        ckpt = torch.load(filename)
+    else:
+        print("Checkpoint does not exist!")
+        print("Check correct path for : {}".format(filename))
+        print("Make sure you have provided the correct path!")
+        print("Or you may have forgotten to train a model for this dataset.")
+        print()
+        print("To train one of the models, run the following")
+        print(">> python train.py --dataset=DATASET_NAME")
+        print()
+        raise Exception("File is not found.")
+    return ckpt
+
+'''
+Generate label prefix for a graph explainer model.
+'''
+def gen_explainer_prefix(args):
+
+    name = gen_prefix(args) + "_explain"
+    if len(args.explainer_suffix) > 0:
+        name += "_" + args.explainer_suffix
+
+    print("GNN Explainer prefix :\"" + name + "\".")
+    return name
