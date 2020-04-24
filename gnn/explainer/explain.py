@@ -69,6 +69,9 @@ class Explainer:
         self, node_idx, graph_idx=0, graph_mode=False, unconstrained=False, exp_model="exp"
     ):
         print('************** Explaining node : {} **************'.format(node_idx))
+        print('The label for graph index {} and node index {} : {}'.format(graph_idx, node_idx, self.label[graph_idx][node_idx]))
+        print("Labels of all the nodes :\n", self.label)
+
         # Adjacency matrix of entire graph
         print("Shape of retrieved neighborhoods :", self.neighborhoods.shape)
         print("No. of neighborhoods :", len(self.neighborhoods[graph_idx][node_idx]))
