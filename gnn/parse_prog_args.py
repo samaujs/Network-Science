@@ -6,31 +6,15 @@
 ##########################################################################################
 
 import argparse
-
-# Set optimizer parameters
-def parse_optimizer(parser):
-    opt_parser = parser.add_argument_group()
-    opt_parser.add_argument('--opt', dest='opt', type=str,
-                            help='Type of optimizer')
-    opt_parser.add_argument('--opt-scheduler', dest='opt_scheduler', type=str,
-                            help='Type of optimizer scheduler. By default none')
-    opt_parser.add_argument('--opt-restart', dest='opt_restart', type=int,
-                            help='Number of epochs before restart (by default set to 0 which means no restart)')
-    opt_parser.add_argument('--opt-decay-step', dest='opt_decay_step', type=int,
-                            help='Number of epochs before decay')
-    opt_parser.add_argument('--opt-decay-rate', dest='opt_decay_rate', type=float,
-                            help='Learning rate decay ratio')
-    opt_parser.add_argument('--lr', dest='lr', type=float,
-                            help='Learning rate.')
-    opt_parser.add_argument('--clip', dest='clip', type=float,
-                            help='Gradient clipping.')
+import utils.parser_utils as parser_utils
 
 # Set training parameters
 def arg_parse():
     print("Attempt to parse arguments...")
     parser = argparse.ArgumentParser(description='GNN program arguments.')
     
-    parse_optimizer(parser) # parser_utils.py in utils
+    # Set optimizer parameters
+    parser_utils.parse_optimizer(parser)
 
     ## Add parsing arguments
     parser.add_argument('--datadir', dest='datadir',

@@ -19,7 +19,7 @@ def main():
     prog_args = parse_explainer_args.arg_parse()
 
     # More params on top of train.py
-    prog_args.writer = False
+    prog_args.writer = None
     prog_args.graph_mode = False
     prog_args.multigraph_class=-1
     prog_args.graph_idx=-1
@@ -106,7 +106,7 @@ def main():
     print('------------------------------------------------------------------------------------\n')
 
     # Explaining single node prediction 
-    #prog_args.explain_node = 25
+    prog_args.explain_node = 25
     # The number of epochs used for explanation training is much smaller than the 1K epochs used for node label
     # trainings and predictions in the GCN.  The former is trained only based on the k-hop labels which depends
     # on the number GCN layers (at a smaller scale, so the number of epochs can be lower without reducing the
@@ -114,6 +114,7 @@ def main():
     # the node explanations.
     #prog_args.num_epochs = 100
     print('GNN Explainer is trained based on {} epochs.'.format(prog_args.num_epochs))
+    print("Writer :", prog_args.writer)
 
     # Create explainer
     explainer = explain.Explainer(
