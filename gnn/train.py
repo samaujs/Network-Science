@@ -22,7 +22,7 @@ import gengraph
 import utils.io_utils as io_utils
 import utils.featureGen as featureGen
 import models
-import parse_prog_args
+import parse_train_args
 
 # Evaluate node classifications
 def evaluate_node(ypred, labels, train_idx, test_idx):
@@ -248,7 +248,7 @@ def syn_task1(args, writer=None):
 # Start of Program from command line
 def main():
     # Parsing defaults for all program parameters unless provided by user
-    prog_args = parse_prog_args.arg_parse()
+    prog_args = parse_train_args.arg_parse()
     syn_task1(prog_args, writer=None) # writer=writer
 
     path = os.path.join(prog_args.logdir, io_utils.gen_prefix(prog_args))
@@ -266,6 +266,9 @@ def main():
     else:
         print('\n------------------------------------------')
         print("Using CPU")
+        print('Batch size : {} and Dropout rate : {}'.format(prog_args.batch_size,
+                                                             prog_args.dropout))
+        print('------------------------------------------')
  
     # writer.close()
 

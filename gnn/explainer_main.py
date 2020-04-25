@@ -19,15 +19,7 @@ def main():
     prog_args = parse_explainer_args.arg_parse()
 
     # More params on top of train.py
-    prog_args.writer = None
-    prog_args.graph_mode = False
-    prog_args.multigraph_class=-1
-    prog_args.graph_idx=-1
-    prog_args.explain_node = None
-
-    prog_args.mask_act="sigmoid"
-    prog_args.mask_bias = False
-    prog_args.explainer_suffix=""
+    prog_args.writer = None            # Check is for None and default is True
 
     path = os.path.join(prog_args.logdir, io_utils.gen_prefix(prog_args))
     print("Tensorboard writer path :\n", path)
@@ -62,7 +54,10 @@ def main():
     print("Keys in loaded model optimizer dictionary:", list(model_optimizer.state_dict()))
     print("All loaded labels :\n", model_dict['cg']['label'])
 
-    print("Default graph mode :", prog_args.graph_mode)
+    print()
+    print('mask_act:{}, mask_bias:{}, explainer_suffix:{}'.format(prog_args.mask_act,
+                                                                  prog_args.mask_bias,
+                                                                  prog_args.explainer_suffix))
 
     # Determine explainer mode
     graph_mode = (
@@ -75,8 +70,8 @@ def main():
     cg_dict = model_dict['cg']
     input_dim = cg_dict['feat'].shape[2]
     num_classes = cg_dict['pred'].shape[2]
-    print("Loaded model from subdirectory \"{}\" ...".format(prog_args.ckptdir))
-    print("input dim : ", input_dim, "; num classes : ", num_classes)
+    print("\nLoaded model from subdirectory \"{}\" ...".format(prog_args.ckptdir))
+    print("input dim :", input_dim, "; num classes :", num_classes)
     print("Labels of retrieved data :\n", cg_dict['label'])
 
     print('------------------------------------------------------------------------------------')
@@ -106,13 +101,14 @@ def main():
     print('------------------------------------------------------------------------------------\n')
 
     # Explaining single node prediction 
-    prog_args.explain_node = 25
+    print('Explaining single default node :', prog_args.explain_node)
+
     # The number of epochs used for explanation training is much smaller than the 1K epochs used for node label
     # trainings and predictions in the GCN.  The former is trained only based on the k-hop labels which depends
     # on the number GCN layers (at a smaller scale, so the number of epochs can be lower without reducing the
     # accuracy). Whereas, the latter will affect the node predictions and thus, it will affect the accuracy of
     # the node explanations.
-    #prog_args.num_epochs = 100
+
     print('GNN Explainer is trained based on {} epochs.'.format(prog_args.num_epochs))
     print("Writer :", prog_args.writer)
 
